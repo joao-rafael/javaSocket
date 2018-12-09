@@ -96,6 +96,11 @@ public class ChatClient{
      */
     public void newMessage(String message) throws IOException {
         //TODO: código que deve enviar a mensagem recebida ao server
+        BufferedReader newMessage =
+        new BufferedReader(message);
+        Socket clientSocket = new Socket("hostname", 6789);
+        DataOutputStream outToServer =
+        new DataOutputStream(clientSocket.getOutputStream());
     }
 
     
