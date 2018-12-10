@@ -3,6 +3,7 @@
  */
 import java.io.*;
 import java.net.*;
+import java.nio.charset.*;
 import java.util.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -24,6 +25,10 @@ import javax.swing.*;
  * @authors João Rafael and Arlei
  */
 public class ChatClient{
+    //Declaração das variáveis globais
+    // Decodificador para texto, UTF8
+    static private final Charset charset = Charset.forName("UTF8");
+    static private final CharsetDecoder decoder = charset.newDecoder();
 	/*
 	 * O seguinte bloco de variáveis está
 	 * relacionado a interface gráfica e não deve ser modificado.
@@ -38,26 +43,25 @@ public class ChatClient{
     /* Uma vez que haja necessidade, o código de inicialização
      * do construtor deverá ser posto aqui.
      */
-
     
     public void printMessage(final String message) {
-        chatArea.append(message);
+        chatArea.append(message + "\n");
     }
 
-    
     /**
      * Construtor da classe
      * 
      * @param server
-     * 			recebe o server
+     * 			recebe o server, "localhost" como de praxe, da linha de
+     *          comandos.
      * @param port
-     * 			porta de conexão
+     * 			recebe porta de conexão, como de praxe, da linha de
+     *          comandos.
      * @throws IOException
-     * 			
+     * 			TODO: inserir descrição dessa exceção
      */
     public ChatClient(String server, int port) throws IOException {
-
-        // InicializaÃ§Ã£o da interface grÃ¡fica --- * NÃƒO MODIFICAR *
+        // Inicialização da interface gráfica --- * NÃO MODIFICAR *
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         JPanel panel = new JPanel();
         panel.setLayout(new BorderLayout());
@@ -98,15 +102,16 @@ public class ChatClient{
      * @throws IOException
      */
     public void newMessage(String message) throws IOException {
-        //TODO: código que deve enviar a mensagem recebida ao server
+        //sent message to the server
         System.out.println("Launched function to send to server");
         InputStream targetStream =
-        new ByteArrayInputStream(message.getBytes());
+        new ByteArrayInputStream(message.getBytes(charset));
         BufferedReader newMessage =
         new BufferedReader(new InputStreamReader(targetStream));
         DataOutputStream outToServer =
-        new DataOutputStream(clientSocket.getOutputStream());
+        new DataOutputStream(this.clientSocket.getOutputStream());
         outToServer.writeBytes(message + "\n");
+        System.out.println("Message " + message + " sent to server");
     }
 
     
@@ -119,14 +124,20 @@ public class ChatClient{
 
         //cria stream de entrada associada ao socket
         //read
-        /*InputStreamReader inputReader = new InputStreamReader(clientSocket.getInputStream());
-        BufferedReader inputFromServer = new BufferedReader(inputReader);
+        InputStreamReader inputReader = 
+        new InputStreamReader(this.clientSocket.getInputStream());
+        BufferedReader inputFromServer =
+        new BufferedReader(inputReader);
+
         String receptedMessage = inputFromServer.readLine();
-        if(receptedMessage==null){
+        if(receptedMessage == null){
             clientSocket.close();
             System.out.println("Closing connection and shutting down");
             return;
-        }*/
+        }else{
+            System.out.println("Recepted message: " + receptedMessage);
+        }
+
     }
     
 
