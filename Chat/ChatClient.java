@@ -34,6 +34,7 @@ public class ChatClient{
     private JTextArea chatArea = new JTextArea();
     //---- fim do bloco de variáveis da interface gráfica
 
+    Socket clientSocket;
     /* Uma vez que haja necessidade, o código de inicialização
      * do construtor deverá ser posto aqui.
      */
@@ -85,7 +86,9 @@ public class ChatClient{
          * inicialização do construtor,
          * deve ser posto aqui
          */
-
+        clientSocket = new Socket(server, port);
+        String message;
+        String receptedMessage;
     }
 
     /**
@@ -96,11 +99,14 @@ public class ChatClient{
      */
     public void newMessage(String message) throws IOException {
         //TODO: código que deve enviar a mensagem recebida ao server
+        System.out.println("Launched function to send to server");
+        InputStream targetStream =
+        new ByteArrayInputStream(message.getBytes());
         BufferedReader newMessage =
-        new BufferedReader(message);
-        Socket clientSocket = new Socket("hostname", 6789);
+        new BufferedReader(new InputStreamReader(targetStream));
         DataOutputStream outToServer =
         new DataOutputStream(clientSocket.getOutputStream());
+        outToServer.writeBytes(message + "\n");
     }
 
     
@@ -110,6 +116,17 @@ public class ChatClient{
      */
     public void run() throws IOException {
         //TODO: método principal
+
+        //cria stream de entrada associada ao socket
+        //read
+        /*InputStreamReader inputReader = new InputStreamReader(clientSocket.getInputStream());
+        BufferedReader inputFromServer = new BufferedReader(inputReader);
+        String receptedMessage = inputFromServer.readLine();
+        if(receptedMessage==null){
+            clientSocket.close();
+            System.out.println("Closing connection and shutting down");
+            return;
+        }*/
     }
     
 
@@ -121,6 +138,7 @@ public class ChatClient{
      * @throws IOException
      */
     public static void main(String[] args) throws IOException {
+        System.out.println("Client started");
         ChatClient client = new ChatClient(args[0], Integer.parseInt(args[1]));
         client.run();
     }
